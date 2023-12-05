@@ -4,7 +4,7 @@ import {
     createTravelHandler,
     getTravelHandler,
     createTravelDayPlanHandler,
-    createTravelDayPlanItemHandler, createTravelItemToPickHandler
+    createTravelDayPlanItemHandler, createTravelItemToPickHandler, revertTravelItemIsPickedHandler
 } from '../controllers/travel.controller';
 import { checkUser } from '../middleware/checkUser';
 import { checkUserAuthorization } from '../middleware/checkUserAuthorization';
@@ -25,5 +25,6 @@ router.get('/:travelId', validate(travelSchema), getTravelHandler);
 router.patch('/:travelId/dayPlan', validate(travelSchema), createTravelDayPlanHandler);
 router.patch('/:travelId/dayPlan/:dayNumber', validate(createTravelDayPlanItemSchema), createTravelDayPlanItemHandler);
 router.patch('/:travelId/itemToPick', validate(createTravelItemSchema), createTravelItemToPickHandler);
+router.get('/:travelId/itemToPick', validate(createTravelItemSchema), revertTravelItemIsPickedHandler);
 
 export default router;

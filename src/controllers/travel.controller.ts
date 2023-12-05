@@ -115,7 +115,6 @@ export const createTravelDayPlanItemHandler = async (
             return next(new AppError("Travel with that ID not found", 404));
         }
 
-        console.log(travel.plan)
         const dayPlan = travel.plan.find((dayPlan) => dayPlan.dayNumber.toString() == req.params.dayNumber);
         if (!dayPlan) {
             return next(new AppError("No plans for day " + req.params.dayNumber, 404));
@@ -149,6 +148,36 @@ export const createTravelItemToPickHandler = async (
         travel.itemsToPick?.push(new ItemToPick(req.body.description));
         const itemsToPick = travel.itemsToPick;
         await updateTravel(travel);
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                itemsToPick,
+            },
+        });
+    } catch (err: any) {
+        next(err);
+    }
+};
+
+export const revertTravelItemIsPickedHandler = async (
+    req: Request<CreateTravelItemInput["params"], {}, CreateTravelItemInput["body"]>,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const travel = await findTravelById(req.params.travelId);
+        if (!travel) {
+            return next(new AppError("Travel with that ID not found", 404));
+        }
+
+        const item = travel.itemsToPick.find((item) => item.name == req.body.description);
+        if (!item) {
+            return next(new AppError("No item " + req.body.description + " found", 404));
+        }
+        item.isPicked = !item.isPicked;
+        await updateTravel(travel);
+        const itemsToPick = travel.itemsToPick;
 
         res.status(200).json({
             status: "success",
