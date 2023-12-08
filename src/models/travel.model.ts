@@ -7,11 +7,18 @@ import {
 } from '@typegoose/typegoose';
 import {User} from "./user.model";
 
+@pre<Travel>("save", function (next) {
+    this.id = this._id;
+    next();
+})
 export class ItemToPick {
     constructor(name: string) {
         this.name = name;
         this.isPicked = false;
     }
+
+    @prop()
+    id: string;
 
     @prop({ required: true, unique: true, type: () => String })
     name: string;
@@ -20,6 +27,10 @@ export class ItemToPick {
     isPicked: boolean;
 }
 
+@pre<Travel>("save", function (next) {
+    this.id = this._id;
+    next();
+})
 export class PlanItem {
     constructor(time: Date | undefined, description: string) {
         if (time) {
@@ -27,6 +38,9 @@ export class PlanItem {
         }
         this.description = description;
     }
+
+    @prop()
+    id: string;
 
     @prop({ required: false, type: () => Date })
     time: Date;

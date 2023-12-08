@@ -9,7 +9,7 @@ import AppError from "../utils/appError";
 import {DayPlan, ItemToPick, PlanItem} from "../models/travel.model";
 import {
     CreateTravelDayPlanItemInput,
-    CreateTravelItemInput, TravelInput
+    CreateTravelItemInput, TravelInput, UpdateTravelItemInput
 } from "../validation/travel.schema";
 export const getAllUserTravelsHandler = async (
     req: Request,
@@ -140,19 +140,24 @@ export const createTravelItemToPickHandler = async (
     next: NextFunction
 ) => {
     try {
-        const travel = await findTravelById(req.params.travelId);
+        let travel = await findTravelById(req.params.travelId);
         if (!travel) {
             return next(new AppError("Travel with that ID not found", 404));
         }
 
-        travel.itemsToPick?.push(new ItemToPick(req.body.description));
-        const itemsToPick = travel.itemsToPick;
+        let item = new ItemToPick(req.body.description)
+        travel.itemsToPick?.push(item);
         await updateTravel(travel);
+
+        travel = await findTravelById(req.params.travelId);
+        if (travel) {
+            item = travel.itemsToPick[travel.itemsToPick.length - 1];
+        }
 
         res.status(200).json({
             status: "success",
             data: {
-                itemsToPick,
+                item,
             },
         });
     } catch (err: any) {
@@ -161,7 +166,7 @@ export const createTravelItemToPickHandler = async (
 };
 
 export const revertTravelItemIsPickedHandler = async (
-    req: Request<CreateTravelItemInput["params"], {}, CreateTravelItemInput["body"]>,
+    req: Request<UpdateTravelItemInput["params"], {}, UpdateTravelItemInput["body"]>,
     res: Response,
     next: NextFunction
 ) => {
@@ -171,18 +176,17 @@ export const revertTravelItemIsPickedHandler = async (
             return next(new AppError("Travel with that ID not found", 404));
         }
 
-        const item = travel.itemsToPick.find((item) => item.name == req.body.description);
+        const item = travel.itemsToPick.find((item) => item._id.toString() === req.body.id);
         if (!item) {
-            return next(new AppError("No item " + req.body.description + " found", 404));
+            return next(new AppError("No item " + req.body.id + " found", 404));
         }
         item.isPicked = !item.isPicked;
         await updateTravel(travel);
-        const itemsToPick = travel.itemsToPick;
 
         res.status(200).json({
             status: "success",
             data: {
-                itemsToPick,
+                item,
             },
         });
     } catch (err: any) {

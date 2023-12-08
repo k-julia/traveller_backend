@@ -27,6 +27,15 @@ export const createTravelItemSchema = object({
     })
 });
 
+export const updateTravelItemSchema = object({
+    params: object({
+        travelId: string(),
+    }),
+    body: object({
+        id: string({ required_error: 'Id is required' }),
+    })
+});
+
 
 export const travelSchema = object({
     params: object({
@@ -37,3 +46,4 @@ export const travelSchema = object({
 export type TravelInput = TypeOf<typeof travelSchema>;
 export type CreateTravelDayPlanItemInput = TypeOf<typeof createTravelDayPlanItemSchema>
 export type CreateTravelItemInput = TypeOf<typeof createTravelItemSchema>;
+export type UpdateTravelItemInput = TypeOf<typeof updateTravelItemSchema>;
