@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-    createTravel,
+    createTravel, createTravelFromGptResponse,
     findAllTravelsForUser,
     findTravelById,
     updateTravel
@@ -11,6 +11,8 @@ import {
     CreateTravelDayPlanItemInput,
     CreateTravelItemInput, TravelInput, UpdateTravelItemInput
 } from "../validation/travel.schema";
+import {generateTravelByRequest} from "../services/chat.service";
+
 export const getAllUserTravelsHandler = async (
     req: Request,
     res: Response,
@@ -47,6 +49,27 @@ export const createTravelHandler = async (
                 travel,
             },
         });
+    } catch (err: any) {
+        next(err);
+    }
+};
+
+export const generateTravelHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = res.locals.user;
+        const gptResponse = await generateTravelByRequest(req.body.country, req.body.date, req.body.dayNumber)
+        console.log("Response" + gptResponse)
+        // const travel = createTravelFromGptResponse(gptResponse, user.userId);
+        // res.status(200).json({
+        //     status: 'success',
+        //     data: {
+        //         travel,
+        //     },
+        // });
     } catch (err: any) {
         next(err);
     }

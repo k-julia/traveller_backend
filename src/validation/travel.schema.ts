@@ -1,11 +1,19 @@
-import {object, string, TypeOf} from 'zod';
-import {createTravelDayPlanHandler} from "../controllers/travel.controller";
+import {number, object, string, TypeOf} from 'zod';
 
 export const createTravelSchema = object({
     body: object({
         name: string({ required_error: 'Name is required' }),
     })
 });
+
+export const generateTravelSchema = object({
+    body: object({
+        country: string({ required_error: 'Country is required' }),
+        date: string({ required_error: 'Date is required' }),
+        dayNumber: number({required_error: 'Number of travel days is required'})
+    })
+});
+
 
 export const createTravelDayPlanItemSchema = object({
     params: object({
@@ -47,3 +55,4 @@ export type TravelInput = TypeOf<typeof travelSchema>;
 export type CreateTravelDayPlanItemInput = TypeOf<typeof createTravelDayPlanItemSchema>
 export type CreateTravelItemInput = TypeOf<typeof createTravelItemSchema>;
 export type UpdateTravelItemInput = TypeOf<typeof updateTravelItemSchema>;
+export type GenerateTravelInput = TypeOf<typeof generateTravelSchema>;
