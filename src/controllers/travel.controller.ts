@@ -61,15 +61,15 @@ export const generateTravelHandler = async (
 ) => {
     try {
         const user = res.locals.user;
-        const gptResponse = await generateTravelByRequest(req.body.country, req.body.date, req.body.dayNumber)
-        console.log("Response" + gptResponse)
-        // const travel = createTravelFromGptResponse(gptResponse, user.userId);
-        // res.status(200).json({
-        //     status: 'success',
-        //     data: {
-        //         travel,
-        //     },
-        // });
+        console.log(req.body.country);
+        const travel = await generateTravelByRequest(req.body.country, req.body.date,
+            req.body.dayNumber, req.body.wishes, user._id)
+        res.status(200).json({
+            status: 'success',
+            data: {
+                travel,
+            },
+        });
     } catch (err: any) {
         next(err);
     }

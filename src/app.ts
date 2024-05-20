@@ -9,7 +9,6 @@ import connectDB from './utils/connectDB';
 import userRouter from './routes/user.route';
 import authRouter from './routes/auth.route';
 import travelRouter from './routes/travel.route';
-import * as https from "https";
 
 const app = express();
 
@@ -57,14 +56,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 const port = config.get<number>('port');
-
-const options = {
-    key: fs.readFileSync('C:/Users/juliet/IdeaProjects/openssl-0.9.8k_X64/bin/server.key'),
-    cert: fs.readFileSync('C:/Users/juliet/IdeaProjects/openssl-0.9.8k_X64/bin/server.crt'),
-}
-
-https.createServer(options, app)
-    .listen(port, () => {
+app.listen(port, () => {
     console.log(`Server started on port: ${port}`);
     connectDB();
 });
